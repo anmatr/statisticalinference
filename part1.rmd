@@ -1,0 +1,76 @@
+## Exponential Distribution Simulation
+Project Statistical Inference - Part 1
+March 2015
+
+The exponential distribution can be simulated in R with `rexp(n, lambda)` where
+`lambda` $\lambda$ is the rate parameter. The mean of exponential distribution is 
+$1/\lambda$ and the standard deviation is also $1/\lambda$. For this simulation,
+we set $\lambda=0.2$. In this simulation, we investigate the distribution of
+averages of 40 numbers sampled from exponential distribution with $\lambda=0.2$.
+
+####Simulations
+```{r, fig.height=5, fig.width=5}
+set.seed(666)
+lambda = 0.2
+samplesize = 40
+sims = c(1:1000)
+means <- data.frame(x = sapply(sims, function(x) {mean(rexp(samplesize, lambda))}))
+head(means)
+```
+
+
+####Sample Mean versus Theoretical Mean
+The actual and theoretical mean for the sample data is
+```{r}
+mean(means$x)           # actual
+1/lambda                # theoretical
+```
+which are quite close. This distribution is centered around the actual figure above. Please also see the diagram below which shows the theoretical mean highlighted with a vertical red line.
+
+####Sample Variance versus Theoretical Variance
+The actual and theoretical standard deviation is
+```{r}
+sd(means$x)             # actual
+(1/lambda)/sqrt(40)     # theoretical
+```
+which are quite close.
+
+The actual and theoretical variance for the sample data is
+```{r}
+var(means$x)             # actual
+((1/lambda)/sqrt(40))^2  # theoretical
+```
+which are also quite close. 
+
+####Distribution is normal
+```{r}
+# histogram of averages
+hist(means$x, breaks=50, prob=TRUE,
+     main="Distribution of averages of samples,
+     drawn from exponential distribution with lambda=0.2",
+     xlab="")
+# averages of samples: denstity
+lines(density(means$x))
+# theoretical distribution center (vertical red line)
+abline(v=1/lambda, col="red")
+# averages of samples (red dotted line): theoretical density
+x <- seq(min(means$x), max(means$x), length=100)
+y <- dnorm(x, mean=1/lambda, sd=(1/lambda/sqrt(samplesize)))
+lines(x, y, pch=22, col="red", lty=2)
+# add description
+legend('topright', c("simulation", "theoretical"), lty=c(1,2), col=c("black", "red"))
+```
+
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
