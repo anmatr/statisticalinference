@@ -1,13 +1,17 @@
 ---
-title: "Exponential Distribution Simulation"
+title: "Exponential Distribution"
 author: "Andre Treffeisen"
 date: "Saturday, March 21, 2015"
 output: pdf_document
 ---
 
-## Exponential Distribution Simulation
+# Simulation Of Exponential Distribution
+
 Project Statistical Inference - Part 1
+
 March 2015
+
+## Overview
 
 The exponential distribution can be simulated in R with `rexp(n, lambda)` where
 `lambda` $\lambda$ is the rate parameter. The mean of exponential distribution is 
@@ -15,7 +19,7 @@ $1/\lambda$ and the standard deviation is also $1/\lambda$. For this simulation,
 we set $\lambda=0.2$. In this simulation, we investigate the distribution of
 averages of 40 numbers sampled from exponential distribution with $\lambda=0.2$.
 
-####Simulations
+## Simulations
 ```{r, fig.height=5, fig.width=5}
 set.seed(666)
 lambda = 0.2
@@ -26,19 +30,21 @@ head(means)
 ```
 
 
-####Sample Mean versus Theoretical Mean
+### Sample Mean versus Theoretical Mean
 The actual and theoretical mean for the sample data is
 ```{r}
 mean(means$x)           # actual
-1/lambda                # theoretical
+tm <- 1/lambda          # theoretical
+tm
 ```
 which are quite close. This distribution is centered around the actual figure above. Please also see the diagram below which shows the theoretical mean highlighted with a vertical red line.
 
-####Sample Variance versus Theoretical Variance
+### Sample Variance versus Theoretical Variance
 The actual and theoretical standard deviation is
 ```{r}
-sd(means$x)             # actual
-(1/lambda)/sqrt(40)     # theoretical
+sd(means$x)                   # actual
+tv <- (1/lambda)/sqrt(40)     # theoretical
+tv
 ```
 which are quite close.
 
@@ -49,7 +55,7 @@ var(means$x)             # actual
 ```
 which are also quite close. 
 
-####Distribution is normal
+### Distribution is normal
 ```{r}
 # histogram of averages
 hist(means$x, breaks=50, prob=TRUE,
@@ -67,17 +73,26 @@ lines(x, y, pch=22, col="red", lty=2)
 # add description
 legend('topright', c("simulation", "theoretical"), lty=c(1,2), col=c("black", "red"))
 ```
+The figure above shows that the histogram can be adequately aproximated with the normal distribution.
+We have shown that the variance and mean of sample data close resembles those of normal distribution. Let's also try to match the confidence intervals which are calculated below:
+
+```{r}
+sm <- means$x
+aci <- round(mean(sm) + c(-1,1) * 1.96 * sd(sm) / sqrt(samplesize), 3)
+tci <- tm + c(-1, 1) * 1.96 * sqrt(tv) / sqrt(samplesize)
+aci        # actual confidence interval
+```
 
 
 ```{r}
+tci
 ```
+Both confidence intervals are also close.
 
 ```{r}
+qqnorm(sm)
+qqline(sm)
 ```
 
-```{r}
-```
-
-```{r}
-```
+With the theoretical quantiles also matching closely the actual quantiles, it shows that the distribution is approximately normal.
 
