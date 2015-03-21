@@ -1,11 +1,19 @@
 ---
 title: "Tooth Growth Analysis"
-author: "André Treffeisen"
+author: "Andre Treffeisen"
 date: "Saturday, March 21, 2015"
-output: html_document
+output: pdf_document
 ---
 
-###Overview
+# Tooth Growth Analysis
+
+Project Statistical Inference - Part 1
+
+March 2015
+
+
+## Overview
+
 Using the tooth growth data set, which shows "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", we will demonstrate some basic statistical inference analysis. This is the second part of the project work for the statistical inference course, which is part of the data science specialisation. With this analysis we try to determine which sources and dosage had a statistically significant effect on tooth length.
 
 ```{r}
@@ -18,7 +26,8 @@ There are 60 observations on 3 variables, which refer to tooth length, supplemen
 
 This results in 6 possible combination, which will be explored going forward.
 
-###Data Analysis
+## Data Analysis
+
 ```{r}
 # convert variable dose from numeric to factor to simplify presentation
 ToothGrowth$dose <- as.factor(ToothGrowth$dose)
@@ -49,29 +58,30 @@ Looking at the growth of teeth over supplements we can state the hypothesis from
 Now we need to see if this assumtions or hypothesises stays uphold in all data combinations.
 
 ### Compare Tooth Growth
-For each airing of variables we will perform a 95% confidence interval t-test.
+
+For each airing of variables we will perform a 95% confidence interval T-test.
 
 We use the following assumptions:
 
-- iid variables
+- IID (independent and identically distributed) variables
 - independent groups
 - constant (pooled) variance amongst groups
 
 Each test will take the form:
 
-- Null Hypothesis: $VarA$ = $VarB$ and $VarB$ = $VarC$
-- Alternative Hypothesis: $VarA$ > $VarB$
+- Null Hypothesis: *VarA* = *VarB* and *VarB* = *VarC*
+- Alternative Hypothesis: *VarA* > *VarB*
 
 The property of transitivity applies to this data set in the follwing way:
 
-- $VarA>VarB$ and $VarB$ > $VarC$ ⇒ $VarA$ > $VarC$
+- *VarA* > *VarB* and *VarB* > *VarC* => *VarA* > *VarC*
      
-####Confidence Intervals
-####Hypothesis Test (Vitamin C Dosage)
+### Hypothesis Test (Vitamin C Dosage)
+
 To test the effects of Vitamin C dosage on tooth growth, the tests are run on the following pairs:
 
-- $VarA$ = 2.0mg, $VarB$ = 1.0mg
-- $VarB$ = 1.0mg, $VarC$ = 0.5mg
+- *VarA* = 2.0 mg, *VarB* = 1.0 mg
+- *VarB* = 1.0 mg, *VarC* = 0.5 mg
 
 We use the following subsets:
 ```{r}
@@ -85,17 +95,20 @@ testAB <- t.test(len~dose, paired=FALSE, var.equal=TRUE, data=AB)$conf
 testBC <- t.test(len~dose, paired=FALSE, var.equal=TRUE, data=BC)$conf
 testAB
 ```
-The 95% test interval does not contain zero, so we can reject the hypothesis that $VarA$ = $VarB$. That means the 2.0mg dose and the 1.0mg have the same effect on tooth growth.
+The 95% test interval does not contain zero, so we can reject the hypothesis that *VarA* = *VarB*. That means the 2.0 mg dose and the 1.0 mg have the same effect on tooth growth.
 ```{r}
 testBC
 ```
-The 95% test interval also does not contain zero, so we can also reject the hypothesis that $VarB$ = $VarC$. That means the 1.0mg dose and the 1.0mg had also the same effect on thooth growth.
-Using transitivity we can also reject the hypothesis that the 2.0mg and the 0.5mg does have the same effect on tooth growth.
-As we rejected all 3 hypothesis we can asume with 95% confidence that higher doses of Vitamin C increase tooth growth in guinea pigs.
+The 95% test interval also does not contain zero, so we can also reject the hypothesis that *VarB* = *VarC*. That means the 1.0 mg dose and the 0.5 mg had also the same effect on thooth growth.
+Using transitivity we can also reject the hypothesis that the 2.0 mg and the 0.5 mg does have the same effect on tooth growth.
+As we rejected all 3 hypothesis we can asume with 95% confidence that higher doses of Vitamin C increase tooth growth in guinea pigs, by favoring the alternative hypothesis.
 
-####Hypothesis Test (Vitamin C Source)
+### Hypothesis Test (Vitamin C Source)
+
 To test the effects of vitamin C source on tooth growth, the tests are run on the folloging pair:
-- $VarA$ = OJ, $VarB$ = VC
+
+- *VarA* = OJ, *VarB* = VC
+
 Then we run the T-test with the stated assumption:
 ```{r}
 testAB <- t.test(len~supp, paired=FALSE, var.equal=TRUE, data=ToothGrowth)$conf
@@ -104,15 +117,37 @@ testAB
 As this 95% test interval includes zero, we can not reject the hypothesis. Orange Juice and pure Vitamin C does have different effects on tooth growth.
 
 
-### Conclusion
-```{r}
+### Hypothesis Test (Vitamin C Source & Dose)
+Now testing the effect of Vitamin C source on tooth growth by dosage with this hypotheses:
 
+- Dose = 0.5 mg: *VarA* = OJ, *VarB* = VC
+- Dose = 1.0 mg: *VarC* = OJ, *VarD* = VC
+- Dose = 2.0 mg: *VarE* = OJ, *VarF* = VC
+
+We need three sets for this test:
+
+```{r}
+dpAB <- subset(ToothGrowth, dose %in% c(0.5))
+dpCD <- subset(ToothGrowth, dose %in% c(1.0))
+dpEF <- subset(ToothGrowth, dose %in% c(2.0))
+```
+
+Which leads to three tests to run:
+
+```{r}
+dtAB <- t.test(len~supp, paired=FALSE, var.equal=TRUE, data=dpAB)$conf
+dtCD <- t.test(len~supp, paired=FALSE, var.equal=TRUE, data=dpCD)$conf
+dtEF <- t.test(len~supp, paired=FALSE, var.equal=TRUE, data=dpEF)$conf
+dtAB
 ```
 
 ```{r}
-
+dtCD
 ```
 
 ```{r}
-
+dtEF
 ```
+
+## Conclusion
+From the AB and the CD test pairs the 95% confidence interval does not contain zero, so we can reject the hypothesis that orange juice and ascorbic acid had the same effect on tooth length for a 0.5 mg or 1.0 mg dose. But for the EF test pair the 95% confidence interval contains a zero, so we fail to reject the hypothesis that the orange juice and ascorbic acid had the same effect on tooth length. The choices of sources for Vitamin C in this test had an effect on tooth growth dependent on dosage levels. But they did not have the same effect on the highest dosage level.
