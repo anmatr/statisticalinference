@@ -1,3 +1,10 @@
+---
+title: "Exponential Distribution Simulation"
+author: "Andre Treffeisen"
+date: "Saturday, March 21, 2015"
+output: pdf_document
+---
+
 ## Exponential Distribution Simulation
 Project Statistical Inference - Part 1
 March 2015
